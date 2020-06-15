@@ -15,7 +15,7 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
 } from "reactstrap";
 
 import { useAuth0 } from "../react-auth0-spa";
@@ -27,7 +27,7 @@ const NavBar = () => {
 
   const logoutWithRedirect = () =>
     logout({
-      returnTo: window.location.origin
+      returnTo: window.location.origin,
     });
 
   return (
@@ -46,6 +46,16 @@ const NavBar = () => {
                   activeClassName="router-link-exact-active"
                 >
                   Home
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  tag={RouterNavLink}
+                  to="/logbook"
+                  exact
+                  activeClassName="router-link-exact-active"
+                >
+                  My Log Book
                 </NavLink>
               </NavItem>
             </Nav>
