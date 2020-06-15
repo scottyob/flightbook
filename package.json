@@ -1,12 +1,15 @@
 {
-  "name": "auth0-react-01-login",
+  "name": "flightbook",
+  "homepage": "https://scottyob.github.io/",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -b master -d build"
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.0.2",
@@ -16,6 +19,7 @@
     "@fortawesome/react-fontawesome": "^0.1.4",
     "express": "^4.16.4",
     "faunadb": "^2.14.2",
+    "gh-pages": "^3.0.0",
     "highlight.js": "^9.15.6",
     "morgan": "^1.9.1",
     "react": "^16.8.6",
