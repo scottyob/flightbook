@@ -1,6 +1,6 @@
 {
-  "name": "flightbook",
-  "homepage": "https://flightbook.scottyob.com/",
+  "name": "OpenFlightLog",
+  "homepage": "https://openflightlog.scottyob.com/",
   "version": "0.1.0",
   "private": true,
   "scripts": {
