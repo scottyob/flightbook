@@ -8,6 +8,9 @@ import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
 import Home from "./views/Home";
 import LogBook from "./views/LogBook";
+import NotFound from "./views/NotFound";
+import Launch from "./views/Launch";
+import Launches from "./views/Launches";
 import Profile from "./views/Profile";
 import { useAuth0 } from "./react-auth0-spa";
 import history from "./utils/history";
@@ -34,6 +37,15 @@ const App = () => {
           <Switch>
             <Route path="/" exact component={Home} />
             <Route path="/logbook/" exact component={LogBook} />
+            <Route path="/launches/" exact component={Launches} />
+            <Route
+              path="/launch/:slug"
+              strict
+              sensitive
+              render={({ match }) => {
+                return match ? <Launch /> : <NotFound />;
+              }}
+            />
             <PrivateRoute path="/profile" component={Profile} />
           </Switch>
         </Container>

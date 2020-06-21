@@ -13,7 +13,7 @@ const contentData = [
   },
   {
     title: "View Launches",
-    link: "#",
+    link: "/launches/",
     description: <LaunchesCount />,
     icon: "rocket",
   },

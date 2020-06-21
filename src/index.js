@@ -7,13 +7,28 @@ import { Auth0Provider } from "./react-auth0-spa";
 import config from "./auth_config.json";
 import history from "./utils/history";
 
-const onRedirectCallback = appState => {
+import ApolloClient from "apollo-boost";
+import { ApolloProvider } from "@apollo/react-hooks";
+
+const onRedirectCallback = (appState) => {
   history.push(
     appState && appState.targetUrl
       ? appState.targetUrl
       : window.location.pathname
   );
 };
+
+const client = new ApolloClient({
+  uri: "https://graphql.fauna.com/graphql",
+  request: (operation) => {
+    const token = "fnADuMvMOsACE5Q_fyoARijNbftfObIrUYQ6Rx8E";
+    operation.setContext({
+      headers: {
+        authorization: token ? `Bearer ${token}` : "",
+      },
+    });
+  },
+});
 
 ReactDOM.render(
   <Auth0Provider
@@ -22,7 +37,9 @@ ReactDOM.render(
     redirect_uri={window.location.origin}
     onRedirectCallback={onRedirectCallback}
   >
-    <App />
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
   </Auth0Provider>,
   document.getElementById("root")
 );
