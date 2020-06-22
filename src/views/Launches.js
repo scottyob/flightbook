@@ -1,14 +1,22 @@
-import React, { Fragment } from "react";
-
+import React, { Fragment, useState } from "react";
 import LaunchesTable from "../components/LaunchesTable";
 
 // Launches view shows a list of launches.
 
-const Launches = () => (
-  <Fragment>
-    <p>Launch should go here</p>
-    <LaunchesTable />
-  </Fragment>
-);
+function Launches() {
+  const [input, setInput] = useState("");
+  return (
+    <>
+      Search:{" "}
+      <input
+        value={input}
+        onChange={(event) => setInput(event.target.value)}
+        name="search"
+        type="text"
+      />
+      <LaunchesTable name={input} />
+    </>
+  );
+}
 
 export default Launches;

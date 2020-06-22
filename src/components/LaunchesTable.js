@@ -2,10 +2,13 @@ import React, { useState, useEffect, useContext } from "react";
 
 import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
+import { ApolloTableQL } from "react-tableql";
+import TableQL from "react-tableql";
+import ReactTable from "react-table";
 
 const GETLAUNCHES = gql`
-  {
-    sitesWithName(name: "") {
+  query Launch($name: String!) {
+    sitesWithName(name: $name) {
       data {
         name
         latitude
@@ -17,15 +20,22 @@ const GETLAUNCHES = gql`
   }
 `;
 
-function LaunchesTable() {
-  const { data, error, loading } = useQuery(GETLAUNCHES);
+function LaunchesTable({ name }) {
+  //return <ApolloTableQL query={GETLAUNCHES} variable={{ name: "Ed" }} />;
 
-  if (!loading) {
-    console.log(data);
-    console.log(error);
+  const { data, error, loading } = useQuery(GETLAUNCHES, {
+    variables: { name },
+  });
+
+  if (loading) {
+    return <div>Loading</div>;
+  }
+  if (error && error.message.includes("Insufficient privileges")) {
+    return <div>Please Login to perform searches</div>;
   }
 
-  return <div>Some table goes here</div>;
+  console.log(data.sitesWithName.data);
+  return <TableQL data={data} />;
 }
 
 export default LaunchesTable;
