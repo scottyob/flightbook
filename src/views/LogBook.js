@@ -1,15 +1,5 @@
-import React, { Fragment } from "react";
+import React from "react";
 
-import LaunchesCount from "../components/LaunchesCount";
-//import FlightsList from "../components/FlightsList";
-
-const LogBook = () => (
-  <Fragment>
-    <p>Table view of LogBook goes here</p>
-    <hr />
-    <p>Upload Flight(s)</p>
-  </Fragment>
-);
+const LogBook = () => <div>Under Construction</div>;
 
 export default LogBook;
-

@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useContext } from "react";
+import React from "react";
 
 import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
-import { ApolloTableQL } from "react-tableql";
 import TableQL from "react-tableql";
-import ReactTable from "react-table";
 
 const GETLAUNCHES = gql`
   query Launch($name: String!) {

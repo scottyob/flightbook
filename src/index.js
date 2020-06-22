@@ -6,7 +6,6 @@ import * as serviceWorker from "./serviceWorker";
 import { Auth0Provider } from "./react-auth0-spa";
 import config from "./auth_config.json";
 import history from "./utils/history";
-import ApolloClient from "apollo-boost";
 
 const onRedirectCallback = (appState) => {
   history.push(
@@ -15,25 +14,6 @@ const onRedirectCallback = (appState) => {
       : window.location.pathname
   );
 };
-
-const client = new ApolloClient({
-  uri: "https://graphql.fauna.com/graphql",
-  request: (operation) => {
-    //const { loading, user } = useAuth0();
-    let token = "";
-    //if (!loading && user) {
-    //  debugger;
-    //https://faunadb.com/id/secret
-    //}
-
-    //const token = "fnADuMvMOsACE5Q_fyoARijNbftfObIrUYQ6Rx8E";
-    operation.setContext({
-      headers: {
-        authorization: token ? `Bearer ${token}` : "",
-      },
-    });
-  },
-});
 
 ReactDOM.render(
   <Auth0Provider

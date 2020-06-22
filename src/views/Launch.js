@@ -1,15 +1,11 @@
-import React, { useState } from "react";
-
-// Launches view shows a list of launches.
+import React from "react";
 
 const Launch = () => {
-  const [input] = useState("Ed");
   return (
     <>
-      <p>Should be searching {this.state.input}</p>
+      <p>Launch Page Under Construction</p>
     </>
   );
 };
 
 export default Launch;
-
