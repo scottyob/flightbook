@@ -1,5 +1,20 @@
 import React from "react";
+import FlightUpload from "../components/FlightUpload";
+import { useAuth0 } from "../react-auth0-spa";
 
-const LogBook = () => <div>Under Construction</div>;
+const Page = () => {
+  const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
 
-export default LogBook;
+  if (!isAuthenticated) {
+    return <div>Create a new user or login to view your logbook</div>;
+  }
+
+  return (
+    <div>
+      <div>{FlightUpload()}</div>
+      <div>Flight History Goes Here</div>
+    </div>
+  );
+};
+
+export default Page;

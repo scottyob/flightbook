@@ -12,3 +12,10 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.files {
+  border: dashed;
+  padding: 5px;
+  text-align: center;
+}
+
