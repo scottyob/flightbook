@@ -6,26 +6,8 @@ const jq = require("jq-web");
 
 const Styles = styled.div`
   padding: 1rem;
-  table {
-    border-spacing: 0;
-    border: 1px solid black;
-    tr {
-      :last-child {
-        td {
-          border-bottom: 0;
-        }
-      }
-    }
-    th,
-    td {
-      margin: 0;
-      padding: 0.5rem;
-      border-bottom: 1px solid black;
-      border-right: 1px solid black;
-      :last-child {
-        border-right: 0;
-      }
-    }
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
   }
   .pagination {
     padding: 0.5rem;
@@ -246,13 +228,15 @@ const GraphqlTable = (props) => {
   });
 
   return (
-    <Table
-      columns={columns}
-      data={table_data}
-      fetchData={fetchData}
-      loading={loading}
-      pageCount={10}
-    />
+    <Styles>
+      <Table
+        columns={columns}
+        data={table_data}
+        fetchData={fetchData}
+        loading={loading}
+        pageCount={10}
+      />
+    </Styles>
   );
 };
 

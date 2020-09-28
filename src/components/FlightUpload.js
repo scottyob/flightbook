@@ -2,7 +2,7 @@ import { gql } from "apollo-boost";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useAuth0 } from "../react-auth0-spa";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Files from "react-files";
 
 const IGCParser = require("igc-parser");
@@ -47,7 +47,7 @@ function constructFlight(
   let totalDistance = 0.0;
   let maxDistance = 0.0;
   fixLocations.forEach((f, i) => {
-    if (i == 0) {
+    if (i === 0) {
       return;
     }
     totalDistance =
@@ -84,7 +84,7 @@ function FlightUploader(props) {
   const { user } = useAuth0();
   const [state, setState] = useState(null);
 
-  if (state == "Uploading" && data) {
+  if (state === "Uploading" && data) {
     setState("DONE");
   }
 
@@ -111,7 +111,7 @@ function FlightUploadManager(props) {
   const [flightInfo, setFlightInfo] = useState(null);
 
   let fix = props.igc.fixes[0];
-  const { data, error, loading } = useQuery(GETLAUNCHES, {
+  const { data } = useQuery(GETLAUNCHES, {
     variables: { lat: fix.latitude, long: fix.longitude },
   });
 

@@ -1,6 +1,5 @@
 import React from "react";
 import FlightUpload from "../components/FlightUpload";
-import FlightsList from "../components/FlightsList";
 import { useAuth0 } from "../react-auth0-spa";
 import Table from "../components/Table";
 import { gql } from "apollo-boost";
@@ -22,7 +21,7 @@ const GET_FLIGHTS = gql`
 `;
 
 const Page = () => {
-  const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+  const { isAuthenticated } = useAuth0();
 
   if (!isAuthenticated) {
     return <div>Create a new user or login to view your logbook</div>;
