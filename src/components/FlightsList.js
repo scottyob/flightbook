@@ -1,20 +1,38 @@
+import { gql } from "apollo-boost";
+import { useQuery } from "@apollo/react-hooks";
 import React from "react";
 
-import logo from "../assets/logo.svg";
+import Table from "./Table";
 
-const Hero = () => (
-  <div>
-    <hr />
-    <div className="text-center hero my-5">
-      <img className="mb-3 app-logo" src={logo} alt="React logo" width="120" />
-      <h1 className="mb-4">React.js Sample Project</h1>
+const GET_FLIGHTS = gql`
+  query FindAllFlights {
+    allFlights(_size: 10) {
+      data {
+        _id
+        location
+      }
+    }
+  }
+`;
 
-      <p className="lead">
-        This is a sample application that demonstrates an authentication flow
-        for an SPA, using <a href="https://reactjs.org">React.js</a>
-      </p>
-    </div>
-  </div>
-);
+const FlightsList = () => {
+  // Loads up flights for a given user
+  return <Table query={GET_FLIGHTS} />;
 
-export default Hero;
+  const { data, error, loading } = useQuery(GET_FLIGHTS);
+
+  if (loading) {
+    return <div>Loading Flights...</div>;
+  }
+
+  if (error) {
+    return <div>{error.message}</div>;
+  }
+
+  let items = data.allFlights.data.map((v, i) => {
+    return <li key={i}>{v.location}</li>;
+  });
+  return <ul>{items}</ul>;
+};
+
+export default FlightsList;

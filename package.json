@@ -25,7 +25,10 @@
     "graphql-tag": "^2.10.3",
     "highlight.js": "^9.15.6",
     "igc-parser": "^0.5.0",
+    "jq-web": "^0.5.1",
+    "md5": "^2.3.0",
     "morgan": "^1.9.1",
+    "node-jq": "^1.11.2",
     "react": "^16.8.6",
     "react-apollo": "^3.1.5",
     "react-apollo-hooks": "^0.5.0",
@@ -34,9 +37,10 @@
     "react-files": "^2.4.8",
     "react-router-dom": "^5.0.0",
     "react-scripts": "^3.4.3",
-    "react-table": "^7.2.0",
+    "react-table": "^7.5.1",
     "react-tableql": "^0.0.10",
-    "reactstrap": "^8.0.0"
+    "reactstrap": "^8.0.0",
+    "styled-components": "^5.2.0"
   },
   "devDependencies": {},
   "eslintConfig": {

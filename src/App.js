@@ -32,7 +32,6 @@ const App = () => {
     return <Loading />;
   }
 
-  console.log("App NOT loading");
   const client = new ApolloClient({
     uri: "https://graphql.fauna.com/graphql",
     request: (operation) => {

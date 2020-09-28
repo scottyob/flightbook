@@ -1,11 +1,13 @@
 import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useAuth0 } from "../react-auth0-spa";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Files from "react-files";
 
 const IGCParser = require("igc-parser");
 const GeoLocation = require("geolocation-utils");
+const md5 = require("md5");
 
 const GETLAUNCHES = gql`
   query FindLaunch($lat: Float!, $long: Float!) {
@@ -18,54 +20,104 @@ const GETLAUNCHES = gql`
   }
 `;
 
-function FindLaunch({ lat, long }) {
-  const { data, error, loading } = useQuery(GETLAUNCHES, {
-    variables: { lat, long },
+const INSERT_FLIGHT = gql`
+  mutation InsertFlight($data: FlightInput!) {
+    createFlight(data: $data) {
+      _id
+    }
+  }
+`;
+
+// builds a flight to log.
+function constructFlight(
+  user,
+  igc,
+  raw_igc,
+  launch_name,
+  file_name,
+  file_hash
+) {
+  let heights = igc.fixes.map((f) => {
+    return f.gpsAltitude;
+  });
+  let fixLocations = igc.fixes.map((f) => {
+    return { lat: f.latitude, lon: f.longitude };
   });
 
-  alert(data);
+  let totalDistance = 0.0;
+  let maxDistance = 0.0;
+  fixLocations.forEach((f, i) => {
+    if (i == 0) {
+      return;
+    }
+    totalDistance =
+      totalDistance + GeoLocation.distanceTo(fixLocations[i - 1], f);
+    let launchDistance = GeoLocation.distanceTo(fixLocations[0], f);
+    if (launchDistance > maxDistance) {
+      maxDistance = launchDistance;
+    }
+  });
+
+  let ret = {
+    date: igc.date,
+    location: launch_name,
+    maxVerticleHeightMeters: Math.max(...heights) - Math.min(...heights),
+    durationMin:
+      (igc.fixes[igc.fixes.length - 1].timestamp - igc.fixes[0].timestamp) /
+      1000 /
+      60,
+    totalDistanceTravelledKm: totalDistance / 1000,
+    maxDistanceFromLaunchKm: maxDistance / 1000,
+    gliderType: igc.gliderType,
+    owner: {
+      connect: user["https://user/id"],
+    },
+    fileHash: file_hash,
+    fileName: file_name,
+    igcFile: raw_igc,
+  };
+  return ret;
 }
 
-var onFilesChange = function (files, setFiles) {
-  setFiles("Files!!");
-  return;
-  while (files.length > 0) {
-    // Parse the IGC file.
-    var reader = new FileReader();
-    reader.onload = function (evt) {
-      if (evt.target.readyState != 2) return;
-      if (evt.target.error) {
-        alert(evt.target.error);
-        return;
-      }
-
-      // TODO:  Find out how to upload these to the datastore.
-      let fileContent = evt.target.result;
-      let parsed = IGCParser.parse(fileContent);
-
-      let fix = parsed.fixes[0];
-      var launch = FindLaunch(fix.latitude, fix.longitude);
-      debugger;
-    };
-
-    var file = files.pop();
-    reader.readAsText(file);
-  }
-};
-
-function distanceTo(launch, fix) {}
-
 function FlightUploader(props) {
-  const [flightSubmitter, setFlightSubmitter] = useState(null);
-  const [location, setLocation] = useState(null);
+  const [addFlight, { data, error }] = useMutation(INSERT_FLIGHT);
+  const { user } = useAuth0();
+  const [state, setState] = useState(null);
+
+  if (state == "Uploading" && data) {
+    setState("DONE");
+  }
+
+  if (!state) {
+    addFlight({
+      variables: {
+        data: constructFlight(
+          user,
+          props.igc,
+          props.raw_igc,
+          props.launchName,
+          props.name,
+          props.fileHash
+        ),
+      },
+    });
+    setState("Uploading");
+  }
+
+  return <span>{error?.message || state}</span>;
+}
+
+function FlightUploadManager(props) {
+  const [flightInfo, setFlightInfo] = useState(null);
 
   let fix = props.igc.fixes[0];
   const { data, error, loading } = useQuery(GETLAUNCHES, {
     variables: { lat: fix.latitude, long: fix.longitude },
   });
 
-  if (data && !location) {
+  if (data && !flightInfo) {
     const center = { lat: fix.latitude, lon: fix.longitude };
+    // Find the closest launch from those roughly in the same area
     var sorted = data.findLaunch.sort((a, b) => {
       return (
         GeoLocation.distanceTo(center, { lat: a.latitude, lon: a.longitude }) -
@@ -73,13 +125,24 @@ function FlightUploader(props) {
       );
     });
     if (sorted.length > 0) {
-      setLocation(sorted[0]);
+      setFlightInfo({
+        location: sorted[0],
+        uploader: (
+          <FlightUploader
+            igc={props.igc}
+            raw_igc={props.raw_igc}
+            name={props.name}
+            launchName={sorted[0].name}
+            fileHash={props.fileHash}
+          />
+        ),
+      });
     }
   }
 
   return (
     <li>
-      {props.name}...{location?.name}...{flightSubmitter}
+      {props.name}...{flightInfo?.location?.name}...{flightInfo?.uploader}
     </li>
   );
 }
@@ -89,7 +152,12 @@ function readAsAsync(file) {
     let reader = new FileReader();
 
     reader.onload = () => {
-      resolve(IGCParser.parse(reader.result));
+      resolve({
+        name: file.name,
+        igc: IGCParser.parse(reader.result),
+        raw_igc: reader.result,
+        fileHash: md5(reader.result),
+      });
     };
 
     reader.onerror = reject;
@@ -113,14 +181,20 @@ function LogBook() {
   if (files && !loadedFiles) {
     let components = [];
     let promises = [];
-    let filenames = [];
     files.forEach((f) => {
       promises.push(readAsAsync(f));
-      filenames.push(f.name);
     });
     Promise.all(promises).then((igcs) => {
-      igcs.forEach((igc, i) => {
-        components.push(<FlightUploader igc={igc} name={filenames[i]} />);
+      igcs.forEach((r) => {
+        components.push(
+          <FlightUploadManager
+            key={r.name}
+            igc={r.igc}
+            raw_igc={r.raw_igc}
+            name={r.name}
+            fileHash={r.fileHash}
+          />
+        );
       });
       setFileUploaders(components);
       setLoadedFiles(true);

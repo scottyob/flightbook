@@ -1,6 +1,25 @@
 import React from "react";
 import FlightUpload from "../components/FlightUpload";
+import FlightsList from "../components/FlightsList";
 import { useAuth0 } from "../react-auth0-spa";
+import Table from "../components/Table";
+import { gql } from "apollo-boost";
+
+const GET_FLIGHTS = gql`
+  query FindAllFlights($size: Int) {
+    allFlights(_size: $size) {
+      data {
+        _id
+        location
+        maxVerticleHeightMeters
+        durationMin
+        totalDistanceTravelledKm
+        maxDistanceFromLaunchKm
+        gliderType
+      }
+    }
+  }
+`;
 
 const Page = () => {
   const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
@@ -12,7 +31,10 @@ const Page = () => {
   return (
     <div>
       <div>{FlightUpload()}</div>
-      <div>Flight History Goes Here</div>
+      <hr />
+      <div>
+        <Table query={GET_FLIGHTS} />;
+      </div>
     </div>
   );
 };

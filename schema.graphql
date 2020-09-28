@@ -11,10 +11,12 @@ type Query {
     latitude: Float!,
     longitude: Float!
   ): [LaunchSites] @resolver(name: "launch_sites_for_location")
+  allFlights: [Flight!]
 }
 
 type users {
   email: String! @unique
+  flights: [Flight!] @relation
 }
 
 type Flight {
@@ -27,16 +29,8 @@ type Flight {
   maxDistanceFromLaunchKm: Float
   gliderType: String
   fileName: String
-  by: users!
-  point: [FlightPoint]
-}
-
-type FlightPoint @embedded {
-  timestamp: Int
-  fixAccuracy: Int
-  gpsAltitude: Float
-  pressureAltitude: Float
-  longitude: Float!
-  latitude: Float!
+  fileHash: String @unique
+  owner: users!
+  igcFile: String
 }
 
